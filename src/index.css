@@ -1,111 +1,92 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+@import "tailwindcss";
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+/* Variante dark: sigue a data-tema="oscuro" en <html> (BotonTema e index.html) y no al
+   sistema operativo. Solo para casos excepcionales: el tema se resuelve con variables */
+@custom-variant dark (&:where([data-tema="oscuro"], [data-tema="oscuro"] *));
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Variables globales: paleta de librería, vino tinto sobre papel (tema claro) */
+@theme static {
+  --font-serif: Georgia, 'Times New Roman', serif;
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  --color-primario: #8c2f39;
+  --color-primario-oscuro: #5e1f27;
+  --color-sobre-primario: #ffffff;
+  --color-texto: #2a211c;
+  --color-texto-suave: #5f5148;
+  --color-fondo: #f8f3ea;
+  --color-superficie: #fffdf8;
+  --color-borde: #e0d4c3;
+  --color-exito: #2e6b3a;
+  --color-alerta: #8f5300;
+  --color-peligro: #b42318;
 }
 
-@media (prefers-color-scheme: dark) {
+@layer base {
+  /* Tema oscuro: se redefinen las variables y todas las utilidades se adaptan solas.
+     primario se aclara y sobre-primario pasa a ser oscuro; primario-oscuro actúa como
+     color de énfasis (títulos y hover). Todos los pares de texto superan 4,5:1 */
+  [data-tema="oscuro"] {
+    color-scheme: dark;
+    --color-primario: #e8a3a3;
+    --color-primario-oscuro: #f3c9b9;
+    --color-sobre-primario: #1c1310;
+    --color-texto: #f1e9de;
+    --color-texto-suave: #c0b2a3;
+    --color-fondo: #16110e;
+    --color-superficie: #221a16;
+    --color-borde: #463a32;
+    --color-exito: #86d39a;
+    --color-alerta: #f2b766;
+    --color-peligro: #f6a197;
+  }
+
   :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+    color-scheme: light;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: var(--color-texto);
+    background-color: var(--color-fondo);
   }
 
-  #social .button-icon {
-    filter: invert(1) brightness(2);
+  body {
+    min-height: 100vh;
   }
-}
 
-body {
-  margin: 0;
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+  h1,
+  h2 {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-serif);
+    line-height: 1.2;
+    color: var(--color-primario-oscuro);
   }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
+
+  h1 {
+    font-size: 1.75rem;
+
+    @variant md {
+      font-size: 2.25rem;
+    }
   }
-}
-p {
-  margin: 0;
-}
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
+  h2 {
+    font-size: 1.3rem;
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+    @variant md {
+      font-size: 1.5rem;
+    }
+  }
+
+  a {
+    color: var(--color-primario);
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  a:hover {
+    color: var(--color-primario-oscuro);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
 }
