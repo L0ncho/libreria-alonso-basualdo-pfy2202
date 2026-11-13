@@ -18,6 +18,7 @@ Actividad formativa de la semana 4 de Frontend II (PFY2202).
 | MSW | 2.15 | API REST simulada en el navegador |
 | ESLint | 10.14 | Revisión del código |
 | gh-pages | 6.3 | Publicación de `dist` en la rama `gh-pages` |
+| Vitest | 5.1 | Pruebas automatizadas |
 
 Las peticiones usan `fetch` nativo y una caché propia (sin axios ni TanStack Query). Requiere Node 22.22 o superior.
 
@@ -27,6 +28,7 @@ Las peticiones usan `fetch` nativo y una caché propia (sin axios ni TanStack Qu
 npm install        # instala las dependencias
 npm run dev        # servidor de desarrollo en http://localhost:5173/
 npm run lint       # revisa el código con ESLint
+npm run test       # ejecuta las pruebas con Vitest (una sola pasada)
 npm run build      # compila en dist/ con la base /libreria-alonso-basualdo-pfy2202/
 npm run preview    # sirve dist/ en http://localhost:4173/libreria-alonso-basualdo-pfy2202/
 npm run deploy     # compila (predeploy) y publica dist/ en la rama gh-pages
@@ -87,6 +89,8 @@ Para el 404 basta con escribir una dirección inexistente, por ejemplo `/categor
 
 **Cómo comprobarlo:** en el sitio publicado, abre las herramientas de desarrollo (pestaña *Network*). Las peticiones a `/api/...` aparecen respondidas por el service worker. Para los errores, usa el selector "Simulación de la API".
 
+**Pruebas que lo respaldan:** `clienteHttp.test.js` usa los handlers reales del mock con `msw/node`. Comprueba las respuestas 200 de `/api/categorias` y `/api/categorias/:id/libros`, y el 404 con el mensaje del servidor para `/categorias/99/libros`.
+
 ### 2. Manejo de errores
 
 **Implementado**
@@ -100,6 +104,10 @@ Para el 404 basta con escribir una dirección inexistente, por ejemplo `/categor
 
 **Cómo comprobarlo:** `/categorias/99` y `/categorias/abc` muestran "No encontrado" sin Reintentar, y `/categorias/7` muestra la lista vacía. Con el modo 500 o "Sin conexión", una categoría no visitada muestra su aviso con Reintentar.
 
+**Pruebas que lo respaldan:**
+- `errores.test.js`: un tipo por caso, el uso del mensaje del servidor y que un `TypeError` del código quede como desconocido.
+- `clienteHttp.test.js`: 404, 500, sin conexión y JSON inválido dan el tipo correcto y no quedan en caché, y tras un error la petición siguiente funciona.
+
 ### 3. Control de carga
 
 **Implementado**
@@ -110,6 +118,8 @@ Para el 404 basta con escribir una dirección inexistente, por ejemplo `/categor
 - Si los datos ya están en caché, no aparece ningún indicador.
 
 **Cómo comprobarlo:** elige "Respuesta lenta (4 s)" y abre una categoría nueva. Vuelve atrás y entra de nuevo: aparece al instante, sin indicador.
+
+**Pruebas que lo respaldan:** el indicador depende de dos cosas que se prueban en `clienteHttp.test.js`. Una cancelación se informa con el tipo `cancelado`, que nunca se muestra como error. `leerCache` entrega al instante lo ya obtenido. Los componentes no tienen pruebas automatizadas, porque las pruebas corren en Node, sin entorno de navegador.
 
 ### 4. Optimización de consultas
 
@@ -124,6 +134,38 @@ Para el 404 basta con escribir una dirección inexistente, por ejemplo `/categor
   - MSW queda en un archivo propio que el navegador reutiliza desde su caché.
 
 **Cómo comprobarlo:** en la pestaña *Network*, recorre Categorías → una categoría → un libro → Volver → Volver. Cada recurso se pide una sola vez. Con `/categorias/abc` no se hace ninguna petición a la API.
+
+**Pruebas que lo respaldan:**
+- `clienteHttp.test.js` cuenta las peticiones que llegan al mock:
+  - lo cacheado no se vuelve a pedir, y `forzar` sí pide de nuevo;
+  - dos consumidores simultáneos generan una sola petición;
+  - si uno cancela, el otro recibe los datos sin abortar la red;
+  - si cancelan ambos, la red se aborta y nada queda en caché;
+  - el caso de `StrictMode` genera una sola petición.
+- `ids.test.js` y `libros.test.js`: los ids inválidos dan ruta `null` (sin petición) y `7` y `007` generan la misma ruta.
+
+## Pruebas
+
+Las pruebas usan Vitest y corren en Node, sin navegador:
+
+```bash
+npm run test
+```
+
+| Archivo | Qué cubre |
+| --- | --- |
+| `src/utils/ids.test.js` | `convertirEntero`: `"7"` y `"007"` dan 7; `"0"`, `"-1"`, `"1.5"`, `"1e3"`, `" 7"`, `"abc"`, `""` y `null` dan `null` |
+| `src/utils/errores.test.js` | `normalizarError` con cada tipo (red, no-encontrado, servidor, cancelado, desconocido), el mensaje del servidor cuando viene, el `TypeError` del código como desconocido, `errorIdInvalido` y `tituloError` |
+| `src/utils/formato.test.js` | `formatearPrecio` en pesos chilenos (`$18.990`) y `formatearCantidadLibros` |
+| `src/services/libros.test.js` | Rutas de los servicios: ids inválidos dan `null`, ids equivalentes dan la misma ruta |
+| `src/services/clienteHttp.test.js` | Caché, `forzar`, peticiones compartidas, cancelación (uno o ambos consumidores), el caso de `StrictMode`, y 404, 500, sin conexión y JSON inválido sin quedar en caché |
+
+**Cómo están armadas**
+
+- **Mock real:** las pruebas del cliente usan los mismos handlers del sitio con `msw/node` (`src/test/servidor.js`). Los errores se provocan reemplazando una respuesta con `server.use`. Cuentan las peticiones que llegan al mock con el evento `request:start` y revisan su `signal` para saber si la red se abortó.
+- **Rutas relativas en Node:** en Node no existe `location`. `src/test/configuracion.js` la define como `http://localhost/` para que `/api/...` se resuelva igual que en el navegador, sin cambiar el código de la aplicación.
+- **Caché vacía en cada prueba:** cada prueba importa una copia nueva del cliente con `vi.resetModules()`, así empieza con la caché vacía sin agregar una función solo para pruebas.
+- **Duración:** el mock responde con su demora real (400 a 900 ms), por lo que la suite tarda unos 10 segundos.
 
 ## REST vs GraphQL
 
@@ -164,6 +206,7 @@ src/
   routes/AppRoutes.jsx  rutas con carga diferida
   services/             clienteHttp.js (caché y peticiones compartidas) y rutas por recurso
   styles/clases.js      clases de Tailwind compartidas
+  test/                 configuración de Vitest y servidor de msw/node
   utils/                errores.js, ids.js y formato.js
   index.css             único CSS: Tailwind, paleta y modo oscuro
 docs/
