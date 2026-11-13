@@ -28,4 +28,10 @@ export default defineConfig(({ command, isPreview }) => ({
   // aunque la compilación apunta a la subcarpeta, y no reproduciría GitHub Pages
   base: command === 'build' || isPreview ? '/libreria-alonso-basualdo-pfy2202/' : '/',
   plugins: [react(), tailwindcss(), copiarIndexComo404()],
+  // Vitest: las pruebas corren en Node, sin entorno de navegador. La configuración común
+  // (location para las rutas relativas de la API) está en src/test/configuracion.js
+  test: {
+    environment: 'node',
+    setupFiles: ['./src/test/configuracion.js'],
+  },
 }))
