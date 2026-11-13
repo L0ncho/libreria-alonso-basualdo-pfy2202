@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { Link, NavLink, Outlet } from 'react-router'
 import BotonTema from './BotonTema.jsx'
 import Cargando from './Cargando.jsx'
+import SelectorSimulacion from './SelectorSimulacion.jsx'
 import VolverArriba from './VolverArriba.jsx'
 import { ESLOGAN, NOMBRE_TIENDA } from '../config/sitio.js'
 
@@ -56,8 +57,9 @@ function Layout() {
           <Outlet />
         </Suspense>
       </main>
-      <footer className="border-t border-borde bg-superficie px-4 py-4 text-center text-sm text-texto-suave">
-        © {anioActual} {NOMBRE_TIENDA} · Proyecto académico con datos simulados
+      <footer className="flex flex-col items-center gap-3 border-t border-borde bg-superficie px-4 py-4 text-center text-sm text-texto-suave">
+        <p>© {anioActual} {NOMBRE_TIENDA} · Proyecto académico con datos simulados</p>
+        <SelectorSimulacion />
       </footer>
     </div>
   )
