@@ -1,0 +1,1 @@
+function e(e){if(typeof e!=`string`&&typeof e!=`number`)return null;let t=String(e);if(!/^\d+$/.test(t))return null;let n=Number(t);return Number.isSafeInteger(n)&&n>0?n:null}export{e as t};

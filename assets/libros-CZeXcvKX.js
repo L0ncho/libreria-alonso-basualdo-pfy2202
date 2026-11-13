@@ -1,0 +1,1 @@
+import{t as e}from"./ids-CM3jmUkf.js";function t(t){let n=e(t);return n===null?null:`/categorias/${n}/libros`}function n(t){let n=e(t);return n===null?null:`/libros/${n}`}export{t as n,n as t};

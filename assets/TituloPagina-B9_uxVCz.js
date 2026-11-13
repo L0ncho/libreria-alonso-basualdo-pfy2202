@@ -1,0 +1,1 @@
+import{n as e,s as t,t as n}from"./index-_69dm7L1.js";var r=t();function i({texto:t}){let i=t?`${t} | ${e}`:`${e} | ${n}`;return(0,r.jsx)(`title`,{children:i})}export{i as t};
