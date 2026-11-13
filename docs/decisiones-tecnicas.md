@@ -121,3 +121,12 @@ En `index.css`, el bloque `[data-tema="oscuro"]` va después de `:root` dentro d
 **Alternativas descartadas.**
 - Leer el tema solo en React: el tema claro se vería un instante.
 - Usar la variante `dark:` de Tailwind en cada componente: el tema oscuro se resuelve redefiniendo las variables de color.
+
+## 10. Diferencias con la guía del curso
+
+| Guía | Este proyecto | Motivo |
+| --- | --- | --- |
+| Create React App | Vite | Create React App está descontinuado; Vite es la herramienta recomendada hoy y compila mucho más rápido |
+| `react-router-dom` | `react-router` | Desde la versión 7 todo se importa desde `react-router`; en la versión 8 `react-router-dom` ya no existe |
+| `process.env` | `import.meta.env` | Vite expone las variables de entorno con `import.meta.env` (por ejemplo `BASE_URL` y `DEV`) |
+| MSW en `devDependencies`, activo solo en desarrollo | MSW en `dependencies` y activo también en producción | El sitio publicado en GitHub Pages no tiene backend: sin el mock, la versión publicada no tendría datos |
