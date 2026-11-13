@@ -78,6 +78,12 @@ export function normalizarError(error) {
   return crear(TIPOS_ERROR.desconocido, null, MENSAJES.desconocido)
 }
 
+// Un id inválido en la URL no genera petición, pero se informa igual que un 404:
+// el recurso no existe y reintentar no lo arregla
+export function errorIdInvalido(mensaje) {
+  return crear(TIPOS_ERROR.noEncontrado, null, mensajeOPorDefecto(mensaje, MENSAJES.noEncontrado))
+}
+
 // Título corto para mostrar sobre el mensaje de error
 export function tituloError(tipo) {
   return TITULOS[tipo] ?? TITULOS[TIPOS_ERROR.desconocido]

@@ -25,3 +25,7 @@ export function clasesBoton(variante = 'primario', tamano = 'normal') {
 
 // Enlace (Link) con el aspecto del botón primario
 export const clasesEnlaceBoton = clasesBoton('primario')
+
+// Tarjeta enlazada de los listados (categorías y libros)
+export const clasesTarjetaEnlace =
+  'flex h-full flex-col gap-2 rounded-xl border border-borde bg-superficie p-5 font-normal text-texto no-underline hover:border-primario'

@@ -1,11 +1,12 @@
 import { Link } from 'react-router'
 import Aviso from '../components/Aviso.jsx'
-import Boton from '../components/Boton.jsx'
+import AvisoErrorConsulta from '../components/AvisoErrorConsulta.jsx'
 import Cargando from '../components/Cargando.jsx'
 import TituloPagina from '../components/TituloPagina.jsx'
 import TarjetaCategoria from '../components/categorias/TarjetaCategoria.jsx'
 import { useCategorias } from '../hooks/useCategorias.js'
-import { tituloError } from '../utils/errores.js'
+
+const SALIDA = { to: '/', texto: 'Ir al inicio' }
 
 function Categorias() {
   const { datos: categorias, cargando, error, reintentar } = useCategorias()
@@ -19,23 +20,10 @@ function Categorias() {
       <section aria-label="Listado de categorías" aria-busy={cargando}>
         {cargando && <Cargando texto="Cargando categorías…" />}
 
-        {error && (
-          <Aviso
-            tipo="error"
-            titulo={tituloError(error.tipo)}
-            acciones={
-              <>
-                <Boton onClick={reintentar}>Reintentar</Boton>
-                <Link to="/">Ir al inicio</Link>
-              </>
-            }
-          >
-            {error.mensaje}
-          </Aviso>
-        )}
+        {error && <AvisoErrorConsulta error={error} reintentar={reintentar} salida={SALIDA} />}
 
         {!cargando && !error && categorias?.length === 0 && (
-          <Aviso acciones={<Link to="/">Ir al inicio</Link>}>
+          <Aviso acciones={<Link to={SALIDA.to}>{SALIDA.texto}</Link>}>
             Todavía no hay categorías disponibles.
           </Aviso>
         )}
