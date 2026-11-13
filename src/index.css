@@ -22,9 +22,19 @@
 }
 
 @layer base {
+  /* Valores base del tema claro. Va antes del tema oscuro: ambos selectores tienen la
+     misma especificidad y aplican a <html>, así que el que va después gana */
+  :root {
+    color-scheme: light;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: var(--color-texto);
+    background-color: var(--color-fondo);
+  }
+
   /* Tema oscuro: se redefinen las variables y todas las utilidades se adaptan solas.
      primario se aclara y sobre-primario pasa a ser oscuro; primario-oscuro actúa como
-     color de énfasis (títulos y hover). Todos los pares de texto superan 4,5:1 */
+     color de énfasis (títulos y hover). Todos los pares de texto superan 4,5:1.
+     Debe ir después de :root para que su color-scheme: dark prevalezca */
   [data-tema="oscuro"] {
     color-scheme: dark;
     --color-primario: #e8a3a3;
@@ -38,13 +48,6 @@
     --color-exito: #86d39a;
     --color-alerta: #f2b766;
     --color-peligro: #f6a197;
-  }
-
-  :root {
-    color-scheme: light;
-    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    color: var(--color-texto);
-    background-color: var(--color-fondo);
   }
 
   body {
