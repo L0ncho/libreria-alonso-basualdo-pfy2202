@@ -5,13 +5,16 @@ const clasesPorTipo = {
   error: 'border-l-peligro text-peligro',
 }
 
-function Aviso({ tipo = 'info', children }) {
+// acciones: botones o enlaces que ofrecen una alternativa (reintentar, ir a otra sección)
+function Aviso({ tipo = 'info', titulo, acciones, children }) {
   const clasesTipo = clasesPorTipo[tipo] ?? clasesPorTipo.info
 
   return (
-    <p className={`${clasesBase} ${clasesTipo}`} role={tipo === 'error' ? 'alert' : 'status'}>
-      {children}
-    </p>
+    <div className={`${clasesBase} ${clasesTipo}`} role={tipo === 'error' ? 'alert' : 'status'}>
+      {titulo && <p className="mb-1 font-bold">{titulo}</p>}
+      <p>{children}</p>
+      {acciones && <div className="mt-3 flex flex-wrap items-center gap-3">{acciones}</div>}
+    </div>
   )
 }
 
